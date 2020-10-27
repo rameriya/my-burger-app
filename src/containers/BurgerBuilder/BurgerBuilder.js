@@ -87,12 +87,20 @@ class BurgerBuilder extends React.Component{
 		});
 	}
 
+	continueHandler = () => {
+		alert("Give me a Hell Yeah!")
+	}
+
 	render(){
 		return (
 			<Aux>
 				<Backdrop show={this.state.showModal} clicked={this.modalHideHandler}/>
 				<Modal show={this.state.showModal} >
-					<OrderSummary ingredients={this.state.ingredients} total={this.state.totalPrice} />
+					<OrderSummary ingredients={this.state.ingredients} 
+					total={this.state.totalPrice} 
+					hide={this.modalHideHandler}
+					continue={this.continueHandler}
+					/>
 				</Modal>
 				<Burger ingredients={this.state.ingredients} />
 				<BuildControls 
