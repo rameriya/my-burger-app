@@ -19,9 +19,6 @@
 .Logo{
 	height: 80%;
 }
-.Menu{
-	cursor: pointer;
-}
 
 @media (max-width: 499px) {
 	.DesktopOnly{
