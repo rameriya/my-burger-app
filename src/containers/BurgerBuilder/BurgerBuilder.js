@@ -18,16 +18,26 @@ const INGREDIENT_PRICES = {
 class BurgerBuilder extends React.Component{
 
 	state = {
-		ingredients:{
-			salad:0,
-			meat:0,
-			bacon:0,
-			cheese:0,
-		},
+		ingredients:null,
 		totalPrice:4,
 		purchasable:false,
 		showModal:false,
-		loading:false
+		loading:false,
+		error:false
+	}
+
+	componentDidMount(){
+		axios.get('https://my-burger-app-12b1d.firebaseio.com/ingredients.json')
+			.then(response => {
+				this.setState({
+					ingredients:response.data
+				})
+			})
+			.catch(error => {
+				this.setState({
+					error:true
+				})
+			})
 	}
 
 	purchaseStateHandler = (ingredients) =>{
@@ -109,35 +119,46 @@ class BurgerBuilder extends React.Component{
 			},
 			deliverMethod:'Fastest'
 		}
-		axios.post('/orders',order)
-		.then(response => {this.setState({
-			loading:false,
-			showModal:false
-		})})
-		.catch(error => {this.setState({
-			loading:false,
-			showModal:false
-		})});
-	}
+		axios.post('/orders.json',order)
+			.then(response => {this.setState({
+				loading:false,
+				showModal:false
+				})
+				alert("Your Order has been placed.")
+			})
+			.catch(error => {this.setState({
+				loading:false,
+				showModal:false
+				})
+			});
+		}
 
 	render(){
-		let orderSummary = <OrderSummary ingredients={this.state.ingredients} 
-					total={this.state.totalPrice} 
-					hide={this.modalHideHandler}
-					continue={this.continueHandler}
-					/>;
+		let orderSummary = <Spinner />;
+		let burger = this.state.error ? <p>Something went wrong</p>:<Spinner />;
 
-		if (this.state.loading){
-			orderSummary = <Spinner />;
-		}			
+		if (this.state.ingredients){
+			orderSummary = <OrderSummary ingredients={this.state.ingredients} 
+						total={this.state.totalPrice} 
+						hide={this.modalHideHandler}
+						continue={this.continueHandler}
+						/>;
+						
+			if (this.state.loading){
+				orderSummary = <Spinner />;
+			}	
+
+			burger = <Burger ingredients={this.state.ingredients} />;		
+		}
 		
+
 		return (
 			<Aux>
 				
 				<Modal show={this.state.showModal} clicked={this.modalHideHandler}>
 					{orderSummary}
 				</Modal>
-				<Burger ingredients={this.state.ingredients} />
+				{burger}
 				<BuildControls 
 				ingredientAdded={this.addIngredientHandler} 
 				ingredientRemoved={this.removeIngredientHandler} 
