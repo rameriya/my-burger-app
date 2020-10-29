@@ -29,11 +29,13 @@ class BurgerBuilder extends React.Component{
 	componentDidMount(){
 		axios.get('https://my-burger-app-12b1d.firebaseio.com/ingredients.json')
 			.then(response => {
+				console.log("[BurgerBuilder.js] axios.then",response);
 				this.setState({
 					ingredients:response.data
 				})
 			})
 			.catch(error => {
+				console.log("[BurgerBuilder.js] axios.catch",error);
 				this.setState({
 					error:true
 				})
@@ -105,6 +107,7 @@ class BurgerBuilder extends React.Component{
 		this.setState({
 			loading:true
 		})
+
 		const order = {
 			ingredients:this.state.ingredients,
 			price:this.state.totalPrice,
@@ -119,6 +122,7 @@ class BurgerBuilder extends React.Component{
 			},
 			deliverMethod:'Fastest'
 		}
+
 		axios.post('/orders.json',order)
 			.then(response => {this.setState({
 				loading:false,
