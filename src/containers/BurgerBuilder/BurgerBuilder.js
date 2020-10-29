@@ -4,9 +4,9 @@ import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/Burger/BuildControls/BuildControls';
 import Modal from '../../components/UI/Modal';
 import OrderSummary from '../../components/OrderSummary/OrderSummary';
-import Backdrop from '../../components/UI/Backdrop/Backdrop';
 import axios from '../../axios-order';
 import Spinner from '../../components/UI/Spinner/Spinner';
+import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 
 const INGREDIENT_PRICES = {
 	salad:0.5,
@@ -109,12 +109,14 @@ class BurgerBuilder extends React.Component{
 			},
 			deliverMethod:'Fastest'
 		}
-		axios.post('/orders.json',order)
+		axios.post('/orders',order)
 		.then(response => {this.setState({
-			loading:false
+			loading:false,
+			showModal:false
 		})})
 		.catch(error => {this.setState({
-			loading:false
+			loading:false,
+			showModal:false
 		})});
 	}
 
@@ -131,8 +133,8 @@ class BurgerBuilder extends React.Component{
 		
 		return (
 			<Aux>
-				<Backdrop show={this.state.showModal} clicked={this.modalHideHandler}/>
-				<Modal show={this.state.showModal} >
+				
+				<Modal show={this.state.showModal} clicked={this.modalHideHandler}>
 					{orderSummary}
 				</Modal>
 				<Burger ingredients={this.state.ingredients} />
@@ -147,4 +149,4 @@ class BurgerBuilder extends React.Component{
 	}
 }
 
-export default BurgerBuilder;
+export default withErrorHandler(BurgerBuilder, axios);
