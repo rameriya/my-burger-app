@@ -5,6 +5,8 @@ import BuildControls from '../../components/Burger/BuildControls/BuildControls';
 import Modal from '../../components/UI/Modal';
 import OrderSummary from '../../components/OrderSummary/OrderSummary';
 import Backdrop from '../../components/UI/Backdrop/Backdrop';
+import axios from '../../axios-order';
+import Spinner from '../../components/UI/Spinner/Spinner';
 
 const INGREDIENT_PRICES = {
 	salad:0.5,
@@ -24,7 +26,8 @@ class BurgerBuilder extends React.Component{
 		},
 		totalPrice:4,
 		purchasable:false,
-		showModal:false
+		showModal:false,
+		loading:false
 	}
 
 	purchaseStateHandler = (ingredients) =>{
@@ -88,19 +91,49 @@ class BurgerBuilder extends React.Component{
 	}
 
 	continueHandler = () => {
-		alert("Give me a Hell Yeah!")
+		//alert("Give me a Hell Yeah!")
+		this.setState({
+			loading:true
+		})
+		const order = {
+			ingredients:this.state.ingredients,
+			price:this.state.totalPrice,
+			customer:{
+				name:'Piyush Shrivastava',
+				address:{
+				street:'TestStreet',
+				zipcode:'452009',
+				country:'India'
+			    },
+			    email:'pshrivastava@isystango.com'
+			},
+			deliverMethod:'Fastest'
+		}
+		axios.post('/orders.json',order)
+		.then(response => {this.setState({
+			loading:false
+		})})
+		.catch(error => {this.setState({
+			loading:false
+		})});
 	}
 
 	render(){
+		let orderSummary = <OrderSummary ingredients={this.state.ingredients} 
+					total={this.state.totalPrice} 
+					hide={this.modalHideHandler}
+					continue={this.continueHandler}
+					/>;
+
+		if (this.state.loading){
+			orderSummary = <Spinner />;
+		}			
+		
 		return (
 			<Aux>
 				<Backdrop show={this.state.showModal} clicked={this.modalHideHandler}/>
 				<Modal show={this.state.showModal} >
-					<OrderSummary ingredients={this.state.ingredients} 
-					total={this.state.totalPrice} 
-					hide={this.modalHideHandler}
-					continue={this.continueHandler}
-					/>
+					{orderSummary}
 				</Modal>
 				<Burger ingredients={this.state.ingredients} />
 				<BuildControls 
