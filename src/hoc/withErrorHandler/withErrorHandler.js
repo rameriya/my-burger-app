@@ -11,18 +11,25 @@ const withErrorHandler = (WrappedComponent, axios) => {
 		
 		useEffect(()=>{
 			console.log("[withErrorHandler.js] useEffect.")
-			axios.interceptors.request.use(request => {
-				setErrorState({
-					error:null
+			const req = axios.interceptors.request.use(request => {
+					setErrorState({
+						error:null
+					})
+					return request;
 				})
-				return request;
-			})
 
-			axios.interceptors.response.use(response => response, error => {
-				setErrorState({
-					error: error
+			const resp = axios.interceptors.response.use(response => response, error => {
+					setErrorState({
+						error: error
+					})
 				})
-			})
+
+			return () => {
+				console.log("[withErrorHandler.js] useEffect cleanup.");
+				axios.interceptors.request.eject(req);
+				axios.interceptors.response.eject(resp);
+			}
+
 		},[errorState.error])
 		
 		const errorHandler = () =>{

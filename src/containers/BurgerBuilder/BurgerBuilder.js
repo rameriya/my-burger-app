@@ -105,6 +105,7 @@ class BurgerBuilder extends React.Component{
 		this.setState({
 			loading:true
 		})
+
 		const order = {
 			ingredients:this.state.ingredients,
 			price:this.state.totalPrice,
@@ -119,6 +120,7 @@ class BurgerBuilder extends React.Component{
 			},
 			deliverMethod:'Fastest'
 		}
+
 		axios.post('/orders.json',order)
 			.then(response => {this.setState({
 				loading:false,
