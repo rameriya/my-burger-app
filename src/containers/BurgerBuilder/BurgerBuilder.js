@@ -29,13 +29,15 @@ class BurgerBuilder extends React.Component{
 	componentDidMount(){
 		axios.get('https://my-burger-app-12b1d.firebaseio.com/ingredients.json')
 			.then(response => {
-				console.log("[BurgerBuilder.js] axios.then",response);
-				this.setState({
-					ingredients:response.data
-				})
+				//console.log("[BurgerBuilder.js] ComponentDidMount axios.then",response);
+				if (response){
+					this.setState({
+						ingredients:response.data
+					})
+				}
 			})
 			.catch(error => {
-				console.log("[BurgerBuilder.js] axios.catch",error);
+				//console.log("[BurgerBuilder.js] ComponentDidMount axios.catch",error);
 				this.setState({
 					error:true
 				})
@@ -50,7 +52,7 @@ class BurgerBuilder extends React.Component{
 		this.setState({
 			purchasable:count > 0
 		})
-		console.log(this.state.purchasable);
+		// console.log(this.state.purchasable);
 	}
 
 	addIngredientHandler = (type) => {
@@ -124,16 +126,23 @@ class BurgerBuilder extends React.Component{
 		}
 
 		axios.post('/orders.json',order)
-			.then(response => {this.setState({
-				loading:false,
-				showModal:false
-				})
-				alert("Your Order has been placed.")
+			.then(response => {
+				if (response){
+					console.log(response,"[BurgerBuilder.js] continueHandler axios.then");
+					alert("Your Order has been placed.");	
+					this.setState({
+						loading:false,
+						showModal:false
+						})
+				}
+				else { throw new Error(response.data);}
 			})
-			.catch(error => {this.setState({
-				loading:false,
-				showModal:false
-				})
+			.catch(error => {
+				console.log(error.message,"[BurgerBuilder.js] continueHandler axios.catch");
+				this.setState({
+					loading:false,
+					showModal:false
+					})
 			});
 		}
 
@@ -158,7 +167,6 @@ class BurgerBuilder extends React.Component{
 
 		return (
 			<Aux>
-				
 				<Modal show={this.state.showModal} clicked={this.modalHideHandler}>
 					{orderSummary}
 				</Modal>

@@ -1,6 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import Aux from '../Aux';
 import Modal from '../../components/UI/Modal';
+import request from './request';
+import response from './response';
 
 const withErrorHandler = (WrappedComponent, axios) => {
 	return (props) => {
@@ -9,25 +11,21 @@ const withErrorHandler = (WrappedComponent, axios) => {
 			error:null
 		});
 		
+		const errorSetterHandler = (error) => {
+			setErrorState({
+			 			error:error
+			 		})
+		}
+
 		useEffect(()=>{
 			console.log("[withErrorHandler.js] useEffect.")
-			const req = axios.interceptors.request.use(request => {
-					setErrorState({
-						error:null
-					})
-					return request;
-				})
-
-			const resp = axios.interceptors.response.use(response => response, error => {
-					setErrorState({
-						error: error
-					})
-				})
+			let req = request(axios, errorSetterHandler);
+			let resp = response(axios, errorSetterHandler);
 
 			return () => {
 				console.log("[withErrorHandler.js] useEffect cleanup.");
-				axios.interceptors.request.eject(req);
-				axios.interceptors.response.eject(resp);
+				 axios.interceptors.request.eject(req);
+				 axios.interceptors.response.eject(resp);
 			}
 
 		},[errorState.error])
@@ -50,3 +48,16 @@ const withErrorHandler = (WrappedComponent, axios) => {
 };
 
 export default withErrorHandler;
+
+// const req = axios.interceptors.request.use(request => {
+			// 		setErrorState({
+			// 			error:null
+			// 		})
+			// 		return request;
+			// 	})
+
+			// const resp = axios.interceptors.response.use(response => response, error => {
+			// 		setErrorState({
+			// 			error: error
+			// 		})
+			// 	})
