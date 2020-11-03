@@ -105,44 +105,16 @@ class BurgerBuilder extends React.Component{
 	}
 
 	continueHandler = () => {
-		//alert("Give me a Hell Yeah!")
-		this.setState({
-			loading:true
-		})
-
-		const order = {
-			ingredients:this.state.ingredients,
-			price:this.state.totalPrice,
-			customer:{
-				name:'Piyush Shrivastava',
-				address:{
-				street:'TestStreet',
-				zipcode:'452009',
-				country:'India'
-			    },
-			    email:'pshrivastava@isystango.com'
-			},
-			deliverMethod:'Fastest'
+		
+		let queryParams = []
+		for (let i in this.state.ingredients){
+			queryParams.push(encodeURIComponent(i)+'='+encodeURIComponent(this.state.ingredients[i]));
 		}
-
-		axios.post('/orders.json',order)
-			.then(response => {
-				if (response){
-					console.log(response,"[BurgerBuilder.js] continueHandler axios.then");
-					alert("Your Order has been placed.");	
-					this.setState({
-						loading:false,
-						showModal:false
-						})
-				}
-				else { throw new Error(response.data);}
-			})
-			.catch(error => {
-				console.log(error.message,"[BurgerBuilder.js] continueHandler axios.catch");
-				this.setState({
-					loading:false,
-					showModal:false
-					})
+		queryParams.push('price='+this.state.totalPrice);
+		const queryString = queryParams.join('&');
+		this.props.history.push({
+				pathname:'/checkout',
+				search: '?'+queryString
 			});
 		}
 
@@ -177,6 +149,7 @@ class BurgerBuilder extends React.Component{
 				currentPrice={this.state.totalPrice} 
 				purchasable={this.state.purchasable} 
 				clicked={this.modalDisplayHandler}/>
+
 			</Aux>
 			);
 	}
