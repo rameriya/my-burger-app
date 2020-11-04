@@ -92,9 +92,10 @@ const ContactData = (props) => {
 		updatedOrderForm[id] = updatedFormElement;
 		setOrderState(updatedOrderForm);
 		for (let key in updatedOrderForm){
-			if (key !== 'deliveryMethod'){
-				formValid = formValid && updatedOrderForm[key].valid;
+			if (key === 'deliveryMethod'){
+				continue;
 			}
+			formValid = formValid && updatedOrderForm[key].valid;
 		}
 		setValid(formValid);
 		
