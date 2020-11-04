@@ -8,7 +8,9 @@ const Checkout  = (props) => {
 		meat:0,
 		cheese:0
 	});
+
 	const [totalPrice, setTotalPrice] = useState(0);
+	
 	useEffect(() => {
 		const searchParams = new URLSearchParams(props.location.search);
 		let temp = {}, price = 0;

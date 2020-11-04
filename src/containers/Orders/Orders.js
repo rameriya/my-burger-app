@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 
 import Order from '../../components/Order/Order';
 import axios from '../../axios-order';
+import Spinner from '../../components/UI/Spinner/Spinner';
 
 const Orders = (props) => {
 	const [orders, setOrderState] = useState([]);
@@ -21,10 +22,14 @@ const Orders = (props) => {
 				console.log(error);
 			})
 	}, []);
-
-	let order = orders.map(order => {
-		return (<Order key={order.id} ingredients={order.ingredients} price={+order.price} />)
-	})
+	
+	let order = <Spinner />;
+	
+	if (!loading){
+		    order = orders.map(order => {
+			return (<Order key={order.id} ingredients={order.ingredients} price={+order.price} />)
+		});
+	}
 	console.log(order);
 	return order;
 }
