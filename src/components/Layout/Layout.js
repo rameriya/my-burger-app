@@ -1,8 +1,11 @@
 import React from 'react';
+import {connect} from 'react-redux';
+
 import Aux from '../../hoc/Aux';
 import classes from './Layout.module.css';
 import Toolbar from '../Navigation/Toolbar/Toolbar';
 import SideDrawer from '../Navigation/SideDrawer/SideDrawer';
+import * as actionCreator from '../../store/actions/index';
 
 class Layout extends React.Component {
 
@@ -25,8 +28,8 @@ class Layout extends React.Component {
 	render(){
 		return (
 			<Aux>
-				<Toolbar openSideDrawer={this.openSideDrawerHandler} />
-				<SideDrawer open={this.state.showSideDrawer} close={this.closeSideDrawerHandler} />
+				<Toolbar openSideDrawer={this.openSideDrawerHandler} isAuth={this.props.isAuth} />
+				<SideDrawer open={this.state.showSideDrawer} close={this.closeSideDrawerHandler} isAuth={this.props.isAuth} />
 				<div>SideDrawer, Backdrop</div>
 				<main className={classes.Content}>
 					{this.props.children}
@@ -35,4 +38,11 @@ class Layout extends React.Component {
 		}
 }
 
-export default Layout;
+const mapStateToProps = state => {
+	return{
+		isAuth:state.auth.isAuth
+	}
+}
+
+
+export default connect(mapStateToProps)(Layout);

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import Aux from '../Aux';
-import Modal from '../../components/UI/Modal';
+import Modal from '../../components/UI/Modal/Modal';
 import request from './request';
 import response from './response';
 
@@ -48,16 +48,3 @@ const withErrorHandler = (WrappedComponent, axios) => {
 };
 
 export default withErrorHandler;
-
-// const req = axios.interceptors.request.use(request => {
-			// 		setErrorState({
-			// 			error:null
-			// 		})
-			// 		return request;
-			// 	})
-
-			// const resp = axios.interceptors.response.use(response => response, error => {
-			// 		setErrorState({
-			// 			error: error
-			// 		})
-			// 	})

@@ -13,13 +13,15 @@ import App from './App';
 
 import burgerBuilder from './store/reducers/burgerBuilder';
 import order from './store/reducers/order';
+import authentication from './store/reducers/auth';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
 const rootReducer = combineReducers({
 	burger: burgerBuilder,
-	order: order
-})
+	order: order,
+	auth: authentication
+});
 
 const store = createStore(rootReducer, composeEnhancers(applyMiddleware(thunk)));
 

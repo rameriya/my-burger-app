@@ -10,7 +10,7 @@ import Spinner from '../../components/UI/Spinner/Spinner';
 const Orders = (props) => {
 	
 	useEffect(() => {
-		let url = '/orders.json';
+		let url = '/orders.json?auth='+props.token;
 		props.retrieveOrder(axios, url);
 	}, []);
 	
@@ -28,7 +28,8 @@ const Orders = (props) => {
 const mapStateToProps = state => {
 	return {
 		loading:state.order.loading,
-		orders:state.order.fetchedOrders
+		orders:state.order.fetchedOrders,
+		token:state.auth.token
 	}
 }
 

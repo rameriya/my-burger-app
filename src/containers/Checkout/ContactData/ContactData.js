@@ -6,31 +6,8 @@ import axios from '../../../axios-order';
 import Button from '../../../components/UI/Button/Button';
 import Input from '../../../components/UI/Input/Input';
 import * as actionCreator from '../../../store/actions/index';
-
-const returnInputObject = (elementType, type, placeholder,validation={required:true}) => {
-	return {
-		elementType:elementType,
-		elementConfig:{
-			type:type,
-			placeholder:placeholder
-		},
-		value:'',
-		validation:validation,
-		valid:false,
-		touched:false
-	}
-}
-
-const checkValidity = (value, rules) => {
-	let isValid = true;
-	if (rules.required){
-		isValid = value.trim() !== '' && isValid;
-	}
-	if (rules.length){
-		isValid = (value.length === rules.length) && isValid;
-	}
-	return isValid;
-}
+import checkValidity from '../../../components/Utilities/CheckValidity';
+import returnInputObject from '../../../components/Utilities/ReturnInputObject';
 
 const ContactData = (props) => {
 	const [orderForm, setOrderState] = useState({
@@ -67,7 +44,7 @@ const ContactData = (props) => {
 		}
 
 		if(formValid){
-			let url = '/orders.json';
+			let url = '/orders.json?auth='+props.token;
 			props.onOrderHandler(axios,url,order);
 
 		}
@@ -125,13 +102,14 @@ const ContactData = (props) => {
 const mapStateToProps = (state) => {
 	return {
 		orders:state.order.orders,
-		redirect:state.order.redirect
+		redirect:state.order.redirect,
+		token:state.auth.token
 	};
 };
 
 const dispatchActionsFromProps = dispatch => {
 	return {
-		onOrderHandler: (axios, url, orderData) => dispatch(actionCreator.purchaseBurgerStart(axios,url,orderData))
+		onOrderHandler: (axios, url, orderData, token) => dispatch(actionCreator.purchaseBurgerStart(axios,url,orderData,token))
 	};
 };
 
