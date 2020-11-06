@@ -5,7 +5,7 @@ import Aux from '../../hoc/Aux';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 
 import axios from '../../axios-order';
-import * as actionType from '../../store/action';
+import * as actionCreators from '../../store/actions/index';
 
 import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/Burger/BuildControls/BuildControls';
@@ -18,31 +18,17 @@ class BurgerBuilder extends React.Component{
 	state = {
 		showModal:false,
 		loading:false,
-		error:false
 	}
 
 	componentDidMount(){
-		axios.get('https://my-burger-app-12b1d.firebaseio.com/ingredients.json')
-			.then(response => {
-				//console.log("[BurgerBuilder.js] ComponentDidMount axios.then",response);
-				if (response){
-					this.setState({
-						ingredients:response.data
-					})
-				}
-			})
-			.catch(error => {
-				//console.log("[BurgerBuilder.js] ComponentDidMount axios.catch",error);
-				this.setState({
-					error:true
-				})
-			})
+		let url = 'https://my-burger-app-12b1d.firebaseio.com/ingredients.json';
+		this.props.setIngredientsHandler(axios,url)
 	}
 
 	purchaseStateHandler = (ingredients) =>{
-		let count = Object.keys(ingredients)
+		let count = ingredients ? Object.keys(ingredients)
 					.map(igKey => ingredients[igKey])
-					.reduce((sum, ele) => sum+ele, 0);
+					.reduce((sum, ele) => sum+ele, 0) : 0;
 		
 		return count > 0;
 		// console.log(this.state.purchasable);
@@ -80,9 +66,9 @@ class BurgerBuilder extends React.Component{
 
 	render(){
 		let orderSummary = <Spinner />;
-		let burger = this.state.error ? <p>Something went wrong</p>:<Spinner />;
+		let burger = this.props.error ? <p>Something went wrong</p>:<Spinner />;
 
-		if (this.state.ingredients){
+		if (this.props.ingredients){
 			orderSummary = <OrderSummary ingredients={this.props.ingredients} 
 						total={this.props.totalPrice} 
 						hide={this.modalHideHandler}
@@ -117,15 +103,17 @@ class BurgerBuilder extends React.Component{
 
 const mapStateToProps = (state) => {
 	return {
-		ingredients:state.ingredients,
-		totalPrice:state.totalPrice
+		ingredients:state.burger.ingredients,
+		totalPrice:state.burger.totalPrice,
+		error:state.burger.error
 	}
 }
 
 const dispatchActionFromProps = (dispatch) => {
 	return {
-		addIngredientHandler: (ingredient) => dispatch({type:actionType.ADD_INGREDIENT, ingredientName:ingredient}),
-		removeIngredientHandler: (ingredient) => dispatch({type:actionType.REMOVE_INGREDIENT, ingredientName:ingredient})
+		addIngredientHandler: (ingredient) => dispatch(actionCreators.addIngredient(ingredient)),
+		removeIngredientHandler: (ingredient) => dispatch(actionCreators.removeIngredient(ingredient)),
+		setIngredientsHandler: (axios,url) => dispatch(actionCreators.initIngredients(axios,url))
 	}
 }
 

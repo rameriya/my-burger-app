@@ -1,5 +1,8 @@
 import React, {useEffect, useState} from 'react';
+import {connect} from 'react-redux';
+
 import CheckoutSummary from '../../components/Order/CheckoutSummary/CheckoutSummary';
+import * as actionCreator from '../../store/actions/index';
 
 const Checkout  = (props) => {
 	const [ingredients, setIngredients] = useState({
@@ -28,6 +31,7 @@ const Checkout  = (props) => {
 
 	const onContinueHandler = () => {
 		props.history.replace('/checkout/contact-data');
+		props.onContinueHandler();
 		console.log(props);
 	}
 
@@ -38,4 +42,16 @@ const Checkout  = (props) => {
 	return (<CheckoutSummary continue={onContinueHandler} cancel={onCancelHandler} ingredients={ingredients} totalPrice={totalPrice}/>);
 }
 
-export default Checkout;
+const mapStateToProps = (state) => {
+	return {
+		redirect:state.order.redirect
+	};
+};
+
+const dispatchActionsFromProps = dispatch => {
+	return {
+		onContinueHandler: () => dispatch(actionCreator.purchaseBurgerInit())
+	};
+};
+
+export default connect(mapStateToProps, dispatchActionsFromProps)(Checkout);

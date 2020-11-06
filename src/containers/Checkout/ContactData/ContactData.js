@@ -1,9 +1,11 @@
 import React,{useState} from 'react';
 import {Redirect} from 'react-router-dom';
+import {connect} from 'react-redux';
 
 import axios from '../../../axios-order';
 import Button from '../../../components/UI/Button/Button';
 import Input from '../../../components/UI/Input/Input';
+import * as actionCreator from '../../../store/actions/index';
 
 const returnInputObject = (elementType, type, placeholder,validation={required:true}) => {
 	return {
@@ -49,7 +51,6 @@ const ContactData = (props) => {
 		},		
 	});
 
-	const [redirect, setRedirect] = useState(false);
 	const [formValid, setValid] = useState(false);
 
 	const onOrderHandler = (event) => {
@@ -66,19 +67,9 @@ const ContactData = (props) => {
 		}
 
 		if(formValid){
-			axios.post('/orders.json',order)
-			.then(response => {
-				if (response){
-					console.log(response,"[BurgerBuilder.js] continueHandler axios.then");
-					alert("Your Order has been placed.");	
-					setRedirect(true);
-				}
-				else { throw new Error(response.data);}
-			})
-			.catch(error => {
-				console.log(error.message,"[BurgerBuilder.js] continueHandler axios.catch");
-				setRedirect(true);
-			});
+			let url = '/orders.json';
+			props.onOrderHandler(axios,url,order);
+
 		}
 	};
 
@@ -117,6 +108,7 @@ const ContactData = (props) => {
 					  touched={element.touched}/>);
 	});
 
+
 	return(
 
 			//  className={classes.ContactData}>
@@ -124,10 +116,23 @@ const ContactData = (props) => {
 				<form onSubmit={onOrderHandler}>
 					{formElements}	
 					<Button type="Success" >Order</Button>
-					{redirect ? <Redirect to="/" />: null}
+					{props.redirect ? <Redirect to="/" />: null}
 				</form>
 			</div>
 		);
 }
 
-export default ContactData;
+const mapStateToProps = (state) => {
+	return {
+		orders:state.order.orders,
+		redirect:state.order.redirect
+	};
+};
+
+const dispatchActionsFromProps = dispatch => {
+	return {
+		onOrderHandler: (axios, url, orderData) => dispatch(actionCreator.purchaseBurgerStart(axios,url,orderData))
+	};
+};
+
+export default connect(mapStateToProps, dispatchActionsFromProps)(ContactData);

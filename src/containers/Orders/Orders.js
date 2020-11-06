@@ -1,32 +1,23 @@
 import React, {useEffect, useState} from 'react';
 
 import Order from '../../components/Order/Order';
+import {connect} from 'react-redux';
+
 import axios from '../../axios-order';
+import * as actionCreator from '../../store/actions/index';
 import Spinner from '../../components/UI/Spinner/Spinner';
 
 const Orders = (props) => {
-	const [orders, setOrderState] = useState([]);
-	const [loading, setLoading] = useState(true);
+	
 	useEffect(() => {
-		axios.get('/orders.json')
-			.then(response => {
-				setLoading(false);
-				const fetchedData = [];
-				for (let key in response.data){
-					fetchedData.push({...response.data[key], id: key});
-				}
-				setOrderState([...fetchedData]);
-			})
-			.catch(error => {
-				setLoading(false);
-				console.log(error);
-			})
+		let url = '/orders.json';
+		props.retrieveOrder(axios, url);
 	}, []);
 	
 	let order = <Spinner />;
 	
-	if (!loading){
-		    order = orders.map(order => {
+	if (!props.loading){
+		    order = props.orders.map(order => {
 			return (<Order key={order.id} ingredients={order.ingredients} price={+order.price} />)
 		});
 	}
@@ -34,4 +25,17 @@ const Orders = (props) => {
 	return order;
 }
 
-export default Orders;
+const mapStateToProps = state => {
+	return {
+		loading:state.order.loading,
+		orders:state.order.fetchedOrders
+	}
+}
+
+const dispatchActionsFromProps = dispatch => {
+	return {
+		retrieveOrder: (axios, url) => dispatch(actionCreator.fetchOrderStart(axios, url))
+	}
+}
+
+export default connect(mapStateToProps, dispatchActionsFromProps)(Orders);
