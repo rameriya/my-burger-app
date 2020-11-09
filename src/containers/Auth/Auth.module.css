@@ -9,4 +9,10 @@
 }
 .Auth input{
 	box-shadow: 0 2px 2px black;
+	width: 80%;
+}
+@media (max-width: 500px) {
+	.Auth{
+		width: 60%;
+	}
 }

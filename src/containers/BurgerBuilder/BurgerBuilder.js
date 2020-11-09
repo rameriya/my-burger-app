@@ -51,9 +51,9 @@ class BurgerBuilder extends React.Component{
 	continueHandler = () => {
 		
 		let queryParams = []
-		console.log(this.props.ingredients);
+		
 		for (let i in this.props.ingredients){
-			console.log(i)
+
 			queryParams.push(encodeURIComponent(i)+'='+encodeURIComponent(this.props.ingredients[i]));
 		}
 		queryParams.push('price='+this.props.totalPrice);

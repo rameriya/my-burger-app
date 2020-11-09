@@ -19,7 +19,6 @@ export const purchaseBurgerStart = (axios, url, orderData) => {
 	return dispatch => {
 		axios.post(url, orderData)
 			.then(response => {
-				console.log('response',response, orderData);
 				if (response){
 					alert("Your Order has been placed.");
 					dispatch(purchaseBurgerSuccess(response.data.name,orderData));	

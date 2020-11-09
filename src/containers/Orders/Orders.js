@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 
 import Order from '../../components/Order/Order';
 import {connect} from 'react-redux';
@@ -22,7 +22,7 @@ const Orders = (props) => {
 			return (<Order key={order.id} ingredients={order.ingredients} price={+order.price} />)
 		});
 	}
-	console.log(order);
+	
 	return order;
 }
 

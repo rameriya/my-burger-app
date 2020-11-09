@@ -8,7 +8,6 @@ import ContactData from '../../../containers/Checkout/ContactData/ContactData';
 
 const checkoutSummary = (props) => {
 
-	console.log("[CheckoutSummary.js]",props.ingredients)
 	const check = props.ingredients;
 	return (
 		<div className={classes.CheckoutSummary} >

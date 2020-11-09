@@ -19,7 +19,7 @@ const Auth = (props) => {
 		password: returnInputObject('input','password','Password',{required:true, minLength: 6})
 	});
 
-	const [formValid, setValid] = useState(false);
+	const [form, setValid] = useState(false);
 	const [btnState, toggleState] = useState(false);
 	
 	const button = {
@@ -43,7 +43,7 @@ const Auth = (props) => {
 			formValid = formValid && updatedControlsForm[key].valid;
 		}
 		
-		setValid(formValid);		
+		setValid(form);		
 	};
 
 	const toggler = () => {
@@ -89,6 +89,7 @@ const Auth = (props) => {
 	});
 
 	let authRedirect = null;
+
 	if (props.isAuth){
 		if(props.price === 4){
 			authRedirect = <Redirect to="/" />

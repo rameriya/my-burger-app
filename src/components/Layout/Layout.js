@@ -5,7 +5,6 @@ import Aux from '../../hoc/Aux';
 import classes from './Layout.module.css';
 import Toolbar from '../Navigation/Toolbar/Toolbar';
 import SideDrawer from '../Navigation/SideDrawer/SideDrawer';
-import * as actionCreator from '../../store/actions/index';
 
 class Layout extends React.Component {
 

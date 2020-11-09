@@ -18,12 +18,12 @@ const withErrorHandler = (WrappedComponent, axios) => {
 		}
 
 		useEffect(()=>{
-			console.log("[withErrorHandler.js] useEffect.")
+			
 			let req = request(axios, errorSetterHandler);
 			let resp = response(axios, errorSetterHandler);
 
 			return () => {
-				console.log("[withErrorHandler.js] useEffect cleanup.");
+				
 				 axios.interceptors.request.eject(req);
 				 axios.interceptors.response.eject(resp);
 			}

@@ -13,7 +13,6 @@ export const initIngredients = (axios,url) => {
 		axios.get(url)
 			.then(response => {
 				if (response){
-					console.log('Watashi wa here!',response.data);
 					dispatch(setIngredients(response.data));
 				}
 			})

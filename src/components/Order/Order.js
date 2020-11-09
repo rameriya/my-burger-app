@@ -10,7 +10,7 @@ const order = (props) => {
 			amount:props.ingredients[ingredientName]
 		})
 	}
-	console.log("Ingredients",ingredients);
+	
 	ingredients = ingredients.map(ingredient => {
 		return <span>{ingredient.name} ({ingredient.amount})</span>
 	})
