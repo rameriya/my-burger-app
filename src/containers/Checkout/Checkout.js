@@ -15,18 +15,18 @@ const Checkout  = (props) => {
 	const [totalPrice, setTotalPrice] = useState(0);
 	
 	useEffect(() => {
-		const searchParams = new URLSearchParams(props.location.search);
-		let temp = {}, price = 0;
-		for (let entry of searchParams.entries()){
-			if (entry[0] === 'price'){
-				price = +entry[1];
-			}
-			else{
-				temp[entry[0]]= +entry[1];
-			}
-		}
-		setTotalPrice(price);
-		setIngredients({...temp});
+		// const searchParams = new URLSearchParams(props.location.search);
+		// let temp = {}, price = 0;
+		// for (let entry of searchParams.entries()){
+		// 	if (entry[0] === 'price'){
+		// 		price = +entry[1];
+		// 	}
+		// 	else{
+		// 		temp[entry[0]]= +entry[1];
+		// 	}
+		// }
+		setTotalPrice(props.price);
+		setIngredients({...props.ingredients});
 	},[]);
 
 	const onContinueHandler = () => {
@@ -44,7 +44,9 @@ const Checkout  = (props) => {
 
 const mapStateToProps = (state) => {
 	return {
-		redirect:state.order.redirect
+		redirect:state.order.redirect,
+		ingredients:state.burger.ingredients,
+		price:state.burger.totalPrice
 	};
 };
 

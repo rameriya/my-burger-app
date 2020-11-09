@@ -1,15 +1,19 @@
 import * as actionType from '../actions/actionTypes';
 import updateState from '../../components/Utilities/utility';
-import {Redirect} from 'react-router-dom';
+
 const initialState = {
 	token:null,
 	id:null,
 	isAuth:false,
 	error: false,
+	expiresIn:null
 };
 
 const authSuccess = (state, action) =>{
-	return updateState(state, {token:action.token, id:action.id, isAuth:action.isAuth});
+	localStorage.setItem('token', action.token);
+	localStorage.setItem('userId', action.id);
+	localStorage.setItem('expiresIn', action.expiresIn);
+	return updateState(state, {token:action.token, id:action.id, isAuth:action.isAuth, expiresIn:action.expiresIn});
 };
 
 const authFail = (state, action) =>{
@@ -24,7 +28,7 @@ const reducer = (state = initialState, action) => {
 
 		case actionType.AUTHENTICATED: return updateState(state, {isAuth:true});
 
-		case actionType.LOGOUT: return updateState(state, {isAuth:false, token:null, id:null});
+		case actionType.LOGOUT: return updateState(state, {isAuth:false, token:null, id:null, expiresIn:null});
 
 		default: return state;
 	};

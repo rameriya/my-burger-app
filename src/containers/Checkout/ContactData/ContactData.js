@@ -40,7 +40,8 @@ const ContactData = (props) => {
 		const order = {
 			ingredients:props.ingredients,
 			price:props.totalPrice.toFixed(2),
-			details:orderData
+			details:orderData,
+			userId:props.userId
 		}
 
 		if(formValid){
@@ -103,7 +104,8 @@ const mapStateToProps = (state) => {
 	return {
 		orders:state.order.orders,
 		redirect:state.order.redirect,
-		token:state.auth.token
+		token:state.auth.token,
+		userId:state.auth.id
 	};
 };
 

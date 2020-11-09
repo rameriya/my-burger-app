@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {connect} from 'react-redux';
 import axios from 'axios';
+import {Redirect} from 'react-router-dom';
 
 import returnInputObject from '../../components/Utilities/ReturnInputObject';
 import checkValidity from '../../components/Utilities/CheckValidity';
@@ -87,9 +88,19 @@ const Auth = (props) => {
 					  touched={element.touched}/>);
 	});
 
+	let authRedirect = null;
+	if (props.isAuth){
+		if(props.price === 4){
+			authRedirect = <Redirect to="/" />
+		}
+		else{
+			authRedirect = <Redirect to="/checkout" />
+		}		
+	}
 
 	return(
 			<div className = {classes.Auth}>
+				{authRedirect}
 				<form onSubmit={(event) => onOrderHandler(event)}>
 					{formElements}	
 					<Button type="Success" >{button[btnState]}</Button>
@@ -100,10 +111,17 @@ const Auth = (props) => {
 		);
 };
 
+const mapStateToProps = state => {
+	return {
+		isAuth:state.auth.isAuth,
+		price:state.burger.totalPrice
+	}
+}
+
 const dispatchActionsFromProps = dispatch => {
 	return {
 		authUser: (axios, url, authData, signIn) => dispatch(actionCreator.authRequestStart(axios, url, authData, signIn))
 	};
 };
 
-export default connect(null, dispatchActionsFromProps)(Auth);
+export default connect(mapStateToProps, dispatchActionsFromProps)(Auth);

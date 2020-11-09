@@ -31,7 +31,7 @@ class BurgerBuilder extends React.Component{
 					.reduce((sum, ele) => sum+ele, 0) : 0;
 		
 		return count > 0;
-		// console.log(this.state.purchasable);
+		
 	}
 
 	modalDisplayHandler = () =>{
@@ -58,12 +58,18 @@ class BurgerBuilder extends React.Component{
 		}
 		queryParams.push('price='+this.props.totalPrice);
 		const queryString = queryParams.join('&');
-		this.props.history.push({
+		if(this.props.isAuth){
+			this.props.history.push({
 				pathname:'/checkout',
 				search: '?'+queryString
 			});
 		}
-
+		else{
+			this.props.history.push("/auth");
+			//<Redirect to="/auth" />
+		}
+		}
+		
 	render(){
 		let orderSummary = <Spinner />;
 		let burger = this.props.error ? <p>Something went wrong</p>:<Spinner />;
@@ -93,7 +99,8 @@ class BurgerBuilder extends React.Component{
 				ingredientAdded={this.props.addIngredientHandler} 
 				ingredientRemoved={this.props.removeIngredientHandler} 
 				currentPrice={this.props.totalPrice} 
-				purchasable={this.purchaseStateHandler(this.props.ingredients)} 
+				purchasable={this.purchaseStateHandler(this.props.ingredients)}
+				isAuth={this.props.isAuth} 
 				clicked={this.modalDisplayHandler}/>
 
 			</Aux>
@@ -105,7 +112,8 @@ const mapStateToProps = (state) => {
 	return {
 		ingredients:state.burger.ingredients,
 		totalPrice:state.burger.totalPrice,
-		error:state.burger.error
+		error:state.burger.error,
+		isAuth:state.auth.isAuth
 	}
 }
 
