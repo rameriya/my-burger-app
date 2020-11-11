@@ -1,6 +1,6 @@
 import * as actionType from '../actionTypes';
 
-const authRequestSuccess = (Token, Id, expiresIn, signIn) => {
+export const authRequestSuccess = (Token, Id, expiresIn, signIn) => {
 	return {
 		type: actionType.AUTHENTICATION_SUCCESS,
 		token:Token,
@@ -10,7 +10,7 @@ const authRequestSuccess = (Token, Id, expiresIn, signIn) => {
 	};
 };
 
-const authRequestFail = (error) => {
+export const authRequestFail = (error) => {
 	return {
 		type: actionType.AUTHENTICATION_FAIL,
 		error: error
@@ -28,34 +28,29 @@ export const authenticationSuccess = (Token, Id, expiresIn, signIn) => {
 }
 
 export const authRequestStart = (axios, url, authData, sign) => {
-	return dispatch => {
-		axios.post(url, authData)
-			.then(response => {
-				let expiresIn = new Date(new Date().getTime() + response.data.expiresIn * 1000);
-				dispatch(authRequestSuccess(response.data.idToken, response.data.localId, expiresIn, sign));
-				dispatch(automaticLogout(expiresIn));
-			})
-			.catch(error => {
-				dispatch(authRequestFail(error.message));
-			});
-	};
+	return {
+		type:actionType.AUTHENTICATION_REQUEST_INIT,
+		axios:axios,
+		url:url,
+		authData:authData,
+		sign:sign
+	} 
 };
 
-const automaticLogout = (expiresIn) => {
-	return dispatch => {
-		setTimeout(() => {
-			localStorage.removeItem('token');
-			localStorage.removeItem('userId');
-			localStorage.removeItem('expiresIn');
-			dispatch({type:actionType.LOGOUT});
-		},expiresIn - new Date().getTime());
+export const automaticLogout = (expiresIn) => {
+	return{
+		type:actionType.CHECKTIMEOUT,
+		expiresIn:expiresIn
 	}
 }
 
 export const logout = (token, id, expiresIn) => {
-	localStorage.removeItem('token');
-	localStorage.removeItem('userId');
-	localStorage.removeItem('expiresIn');
+	return {
+		type:actionType.LOGOUT_INIT
+	}
+}
+
+export const endSession = () => {
 	return {
 		type:actionType.LOGOUT
 	}
