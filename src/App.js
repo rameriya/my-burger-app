@@ -1,47 +1,52 @@
-import React from 'react';
+import React, {useEffect, Suspense, useCallback} from 'react';
 import {Route, Switch, Redirect, withRouter} from 'react-router-dom';
-import {connect} from 'react-redux';
+import {connect, useDispatch, useSelector} from 'react-redux';
 
 import Layout from './components/Layout/Layout';
-
-import asyncComponent from './hoc/asyncComponent';
 
 import * as actionCreator from './store/actions/index';
 
 import BurgerBuilder from './containers/BurgerBuilder/BurgerBuilder';
 
 import Logout from './containers/Auth/Logout/Logout';
+import Spinner from './components/UI/Spinner/Spinner';
 
-const asyncCheckout = asyncComponent(() => {
+const Checkout = React.lazy(() => {
   return import('./containers/Checkout/Checkout');
 });
 
-const asyncOrders = asyncComponent(() => {
+const Orders = React.lazy(() => {
   return import('./containers/Orders/Orders');
 });
 
-const asyncAuth = asyncComponent(() => {
+const Auth = React.lazy(() => {
   return import('./containers/Auth/Auth');
 });
 
-class App extends React.Component {
-  componentDidMount(){
-    this.props.getToken();
-  };
+const App = props => {
 
-  render(){
-    let routes = (
+  const dispatch = useDispatch();
+
+  const getToken = () => dispatch(actionCreator.getInitialState());
+
+  const isAuth = useSelector(state => state.auth.isAuth);
+
+  useEffect(() => {
+    getToken();
+  },[getToken]);
+
+  let routes = (
         <Switch>
-          <Route path="/auth" component={asyncAuth} />
+          <Route path="/auth" render={() => <Auth />} />
           <Route path="/" exact component={BurgerBuilder} /> 
           <Redirect to="/" />
         </Switch>
       );
-    if (this.props.isAuth){
+    if (isAuth){
       routes = (<Switch>
-          <Route path="/orders" component={asyncOrders} />
-          <Route path="/auth" component={asyncAuth} />
-          <Route path="/checkout" component={asyncCheckout} />
+          <Route path="/orders" render={() => <Orders />} />
+          <Route path="/auth" render={() => <Auth />} />
+          <Route path="/checkout" render={() => <Checkout />} />
           <Route path="/logout" component={Logout} />
           <Route path="/" exact component={BurgerBuilder} /> 
           <Redirect to="/" />
@@ -50,22 +55,10 @@ class App extends React.Component {
 
     return (
       <Layout>
-      	{routes}
+      	<Suspense fallback={<Spinner />}>{routes}</Suspense>
       </Layout>
   );
-  }
 }
 
-const mapStateToProps = state => {
-  return {
-    isAuth: state.auth.isAuth
-  };
-}
 
-const dispatchActionsFromProps = dispatch => {
-  return{
-    getToken: () => dispatch(actionCreator.getInitialState())
-  };
-}
-
-export default withRouter(connect(mapStateToProps, dispatchActionsFromProps)(App));
+export default withRouter(App);

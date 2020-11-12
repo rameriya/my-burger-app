@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 
 import CheckoutSummary from '../../components/Order/CheckoutSummary/CheckoutSummary';
@@ -27,7 +28,7 @@ const Checkout  = (props) => {
 	const onCancelHandler = () => {
 		props.history.goBack();
 	}
-
+	
 	return (<CheckoutSummary continue={onContinueHandler} cancel={onCancelHandler} ingredients={ingredients} totalPrice={totalPrice}/>);
 }
 
@@ -45,4 +46,4 @@ const dispatchActionsFromProps = dispatch => {
 	};
 };
 
-export default connect(mapStateToProps, dispatchActionsFromProps)(Checkout);
+export default withRouter(connect(mapStateToProps, dispatchActionsFromProps)(Checkout));

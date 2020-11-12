@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
 
 import Aux from '../../hoc/Aux';
@@ -13,19 +13,17 @@ import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/OrderSummary/OrderSummary';
 import Spinner from '../../components/UI/Spinner/Spinner';
 
-class BurgerBuilder extends React.Component{
+const BurgerBuilder = props => {
 
-	state = {
-		showModal:false,
-		loading:false,
-	}
+	const [showModal, setShowModal] = useState(false);
+	const [loading, setLoading] = useState(false); 
 
-	componentDidMount(){
+	useEffect(() => {
 		let url = 'https://my-burger-app-12b1d.firebaseio.com/ingredients.json';
-		this.props.setIngredientsHandler(axios,url)
-	}
+		props.setIngredientsHandler(axios,url)
+	},[]);
 
-	purchaseStateHandler = (ingredients) =>{
+	const purchaseStateHandler = (ingredients) =>{
 		let count = ingredients ? Object.keys(ingredients)
 					.map(igKey => ingredients[igKey])
 					.reduce((sum, ele) => sum+ele, 0) : 0;
@@ -34,78 +32,73 @@ class BurgerBuilder extends React.Component{
 		
 	}
 
-	modalDisplayHandler = () =>{
-		this.setState({
-			showModal:true
-		})
+	const modalDisplayHandler = () => {
+		setShowModal(true);
 	}
 
-	modalHideHandler = () => {
-		this.setState((prev) => {
-			return {
-				showModal: !prev.showModal
-			}
-		});
+	const modalHideHandler = () => {
+		setShowModal((prev) => !prev);
 	}
 
-	continueHandler = () => {
+	const continueHandler = () => {
 		
 		let queryParams = []
 		
-		for (let i in this.props.ingredients){
+		for (let i in props.ingredients){
 
-			queryParams.push(encodeURIComponent(i)+'='+encodeURIComponent(this.props.ingredients[i]));
+			queryParams.push(encodeURIComponent(i)+'='+encodeURIComponent(props.ingredients[i]));
+	
 		}
-		queryParams.push('price='+this.props.totalPrice);
+	
+		queryParams.push('price='+props.totalPrice);
+	
 		const queryString = queryParams.join('&');
-		if(this.props.isAuth){
-			this.props.history.push({
+	
+		if(props.isAuth){
+			props.history.push({
 				pathname:'/checkout',
 				search: '?'+queryString
 			});
 		}
 		else{
-			this.props.history.push("/auth");
-			//<Redirect to="/auth" />
+			props.history.push("/auth");
 		}
-		}
+	
+	}
 		
-	render(){
-		let orderSummary = <Spinner />;
-		let burger = this.props.error ? <p>Something went wrong</p>:<Spinner />;
+	let orderSummary = <Spinner />;
+	let burger = props.error ? <p>Something went wrong</p>:<Spinner />;
 
-		if (this.props.ingredients){
-			orderSummary = <OrderSummary ingredients={this.props.ingredients} 
-						total={this.props.totalPrice} 
-						hide={this.modalHideHandler}
-						continue={this.continueHandler}
-						/>;
+	if (props.ingredients){
+		orderSummary = <OrderSummary ingredients={props.ingredients} 
+					total={props.totalPrice} 
+					hide={modalHideHandler}
+					continue={continueHandler}
+					/>;
 						
-			if (this.state.loading){
-				orderSummary = <Spinner />;
-			}	
-
-			burger = <Burger ingredients={this.props.ingredients} />;		
-		}
-		
-
-		return (
+	if (loading){
+		orderSummary = <Spinner />;
+	}	
+	burger = <Burger ingredients={props.ingredients} />;
+	}
+	
+	return (
 			<Aux>
-				<Modal show={this.state.showModal} clicked={this.modalHideHandler}>
+				<Modal show={showModal} clicked={modalHideHandler}>
 					{orderSummary}
 				</Modal>
 				{burger}
 				<BuildControls 
-				ingredientAdded={this.props.addIngredientHandler} 
-				ingredientRemoved={this.props.removeIngredientHandler} 
-				currentPrice={this.props.totalPrice} 
-				purchasable={this.purchaseStateHandler(this.props.ingredients)}
-				isAuth={this.props.isAuth} 
-				clicked={this.modalDisplayHandler}/>
+				ingredientAdded={props.addIngredientHandler} 
+				ingredientRemoved={props.removeIngredientHandler} 
+				currentPrice={props.totalPrice} 
+				purchasable={purchaseStateHandler(props.ingredients)}
+				isAuth={props.isAuth} 
+				clicked={modalDisplayHandler}/>
 
 			</Aux>
-			);
-	}
+			);		
+
 }
 
 const mapStateToProps = (state) => {

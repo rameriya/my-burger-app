@@ -1,49 +1,47 @@
 import React, {useEffect, useState} from 'react';
+
 import Aux from '../Aux';
 import Modal from '../../components/UI/Modal/Modal';
-import request from './request';
-import response from './response';
 
 const withErrorHandler = (WrappedComponent, axios) => {
-	return (props) => {
+		return (props) => {
 		
-		const [errorState, setErrorState] = useState({
-			error:null
-		});
+		const [error, setError] = useState(null);
 		
-		const errorSetterHandler = (error) => {
-			setErrorState({
-			 			error:error
-			 		})
-		}
+		const req = axios.interceptors.request.use(req => {
+												      setError(null);
+												      return req;
+												    });
 
+		const resp = axios.interceptors.response.use(
+												      res => res,
+												      err => {
+												        setError(err);
+												      }
+												    );
+
+		console.log(error);
 		useEffect(()=>{
-			
-			let req = request(axios, errorSetterHandler);
-			let resp = response(axios, errorSetterHandler);
-
 			return () => {
-				
-				 axios.interceptors.request.eject(req);
-				 axios.interceptors.response.eject(resp);
-			}
+		        axios.interceptors.request.eject(req);
+		        axios.interceptors.response.eject(resp);
+		      };
 
-		},[errorState.error])
+		},[req, resp]);
 		
-		const errorHandler = () =>{
-			setErrorState({
-				error:null
-			})
+		const errorConfirmedHandler = () =>{
+			setError(null);
 		}
 
 		return (
-				<Aux>
-					<Modal show={errorState.error} clicked={errorHandler} >
-						{errorState.error ? errorState.error.message:null}
-					</Modal>
-					<WrappedComponent {...props} />
-				</Aux>
-			);
+			      <Aux>
+			        <Modal show={error} clicked={errorConfirmedHandler}>
+			          {error ? error.message : null}
+			        </Modal>
+			        <WrappedComponent {...props} />
+			      </Aux>
+			    );
+
 	}
 };
 
